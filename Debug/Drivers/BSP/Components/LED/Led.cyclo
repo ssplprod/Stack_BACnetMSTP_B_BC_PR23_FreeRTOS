@@ -1,0 +1,5 @@
+../Drivers/BSP/Components/LED/Led.c:3:6:BSP_Set_COM_LED	4
+../Drivers/BSP/Components/LED/Led.c:33:6:BSP_Set_STATUS_LED	1
+../Drivers/BSP/Components/LED/Led.c:63:6:BSP_Set_ALL_LED_On	1
+../Drivers/BSP/Components/LED/Led.c:78:6:BSP_Set_ALL_LED_Off	1
+../Drivers/BSP/Components/LED/Led.c:93:6:BSP_Display_Percent	1

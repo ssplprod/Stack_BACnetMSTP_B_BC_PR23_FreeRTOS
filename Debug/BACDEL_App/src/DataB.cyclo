@@ -1,0 +1,9 @@
+../BACDEL_App/src/DataB.c:26:7:GetpSMCfg	1
+../BACDEL_App/src/DataB.c:32:6:InitBACnetStruct	1
+../BACDEL_App/src/DataB.c:50:6:SaveFactoryDatatoNV	1
+../BACDEL_App/src/DataB.c:64:6:ResetToFactoryDefault	1
+../BACDEL_App/src/DataB.c:73:6:DataB_Init	1
+../BACDEL_App/src/DataB.c:89:10:enumToBaud	10
+../BACDEL_App/src/DataB.c:137:10:enumToParity	3
+../BACDEL_App/src/DataB.c:147:10:enumToDataBits	2
+../BACDEL_App/src/DataB.c:155:10:enumToStopBits	2

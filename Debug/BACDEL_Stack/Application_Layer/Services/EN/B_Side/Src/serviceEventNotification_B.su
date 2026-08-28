@@ -1,0 +1,12 @@
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:98:14:Create_EventNotification_MsgQ_Struct	24	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:164:6:IsDoubleNotification	24	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:247:27:Change_Of_Reliability_Prop_Values	72	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:610:13:Get_Event_Value	80	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:1028:14:Get_Event_Notification_Parameters	48	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:1210:13:Update_Dependent_Properties	88	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:1327:27:Save_Event_Notification	24	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:1465:6:Send_Notification	56	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:1799:20:Send_Event_Notification	352	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:2082:9:Event_Notification_Encoder	32	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:2194:6:Check_For_Event_Notification_Generation	40	static
+../BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src/serviceEventNotification_B.c:2444:6:Post_Event_Notification	56	static

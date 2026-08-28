@@ -1,0 +1,4 @@
+../BACDEL_Stack/Application_Layer/Services/RP/Src/serviceReadProperty_B.c:73:20:RP_B_Decode_Handler	48	static
+../BACDEL_Stack/Application_Layer/Services/RP/Src/serviceReadProperty_B.c:184:9:RP_B_Decode_Service_Request	32	static
+../BACDEL_Stack/Application_Layer/Services/RP/Src/serviceReadProperty_B.c:259:9:RP_B_Ack_Encoder	2016	static
+../BACDEL_Stack/Application_Layer/Services/RP/Src/serviceReadProperty_B.c:425:6:RP_B_Request_Parser	120	static

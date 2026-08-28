@@ -1,0 +1,5 @@
+../BACDEL_Stack/Application_Layer/Services/DCC/Src/serviceDeviceCommControl_B.c:65:20:DCC_B_Decode_Handler	48	static
+../BACDEL_Stack/Application_Layer/Services/DCC/Src/serviceDeviceCommControl_B.c:288:6:DCC_B_Validate_Password	24	static
+../BACDEL_Stack/Application_Layer/Services/DCC/Src/serviceDeviceCommControl_B.c:338:6:DCC_B_Request_Parser	96	static
+../BACDEL_Stack/Application_Layer/Services/DCC/Src/serviceDeviceCommControl_B.c:497:28:DCC_B_Get_Status	24	static
+../BACDEL_Stack/Application_Layer/Services/DCC/Src/serviceDeviceCommControl_B.c:554:6:DCC_B_Update_State_And_Inform_Application	32	static

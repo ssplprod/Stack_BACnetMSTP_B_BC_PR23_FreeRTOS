@@ -1,7 +1,7 @@
 #ifndef DATAB_H_
 #define DATAB_H_
 
-#include "definestruct.h"
+#include "DefineStruct.h"
 
 
 void DataB_Init();

@@ -1,0 +1,7 @@
+../BACDEL_Stack/Application_Layer/Stack_Mgmt/Src/bacnetStackMgmt.c:223:6:Init_Service_Handlers	8	static
+../BACDEL_Stack/Application_Layer/Stack_Mgmt/Src/bacnetStackMgmt.c:362:6:Stop_Receive_Req	16	static
+../BACDEL_Stack/Application_Layer/Stack_Mgmt/Src/bacnetStackMgmt.c:417:6:Process_Thread_Task	40	static
+../BACDEL_Stack/Application_Layer/Stack_Mgmt/Src/bacnetStackMgmt.c:667:6:Transmit_Thread_Task	24	static
+../BACDEL_Stack/Application_Layer/Stack_Mgmt/Src/bacnetStackMgmt.c:777:9:Find_Empty_Queue_Index	16	static
+../BACDEL_Stack/Application_Layer/Stack_Mgmt/Src/bacnetStackMgmt.c:866:8:Find_In_Host_Device_List	24	static
+../BACDEL_Stack/Application_Layer/Stack_Mgmt/Src/bacnetStackMgmt.c:909:8:Find_In_Remote_Device_List	24	static

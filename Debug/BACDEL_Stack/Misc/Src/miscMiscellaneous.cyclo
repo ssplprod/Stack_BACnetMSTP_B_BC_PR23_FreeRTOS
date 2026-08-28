@@ -1,0 +1,9 @@
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:59:10:Swap_Unsigned16_Bytes	1
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:74:10:Swap_Unsigned32_Bytes	1
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:96:9:Byte_Reverse_Bits	9
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:149:6:Copy_String	2
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:185:10:Memcopy	3
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:235:10:Memcopy_Dynamic_Mem_Expansion	9
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:327:10:Strcopy	5
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:384:9:Strncmp	3
+../BACDEL_Stack/Misc/Src/miscMiscellaneous.c:421:10:Strnlen	2

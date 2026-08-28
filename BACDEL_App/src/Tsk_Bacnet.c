@@ -17,7 +17,7 @@
 #include "datalinkMSTP.h"
 #include "stm32h563xx.h"
 #include <string.h>
-#include "defineStruct.h"
+#include "DefineStruct.h"
 #include "DataB.h"
 
 #include "main.h"
@@ -329,7 +329,7 @@ void app_bacnet_init()
 	BACNET_RETURN_TYPE ret = BACDEL_SUCCESS;
 
 	uint8_t  uwBacMacAddr = SMCfg.g_BACnetCfg.ComID;
-	uint32_t uwBacBaudRate = ebr_9600;//enumToBaud(SMCfg.g_Com485Cfg.Baudrate);
+	uint32_t uwBacBaudRate = ebr_76800;//enumToBaud(SMCfg.g_Com485Cfg.Baudrate);
 	BACDEL_MSTP_Stack_Init(uwBacMacAddr,uwBacBaudRate,0 );
 
 	Init_Service_Handlers();

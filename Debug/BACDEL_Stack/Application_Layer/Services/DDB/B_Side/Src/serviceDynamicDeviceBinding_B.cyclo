@@ -1,0 +1,4 @@
+../BACDEL_Stack/Application_Layer/Services/DDB/B_Side/Src/serviceDynamicDeviceBinding_B.c:61:20:Who_Is_B_Decode_Handler	10
+../BACDEL_Stack/Application_Layer/Services/DDB/B_Side/Src/serviceDynamicDeviceBinding_B.c:218:9:I_Am_B_Request_Encoder	2
+../BACDEL_Stack/Application_Layer/Services/DDB/B_Side/Src/serviceDynamicDeviceBinding_B.c:289:6:Who_Is_B_Request_Parser	6
+../BACDEL_Stack/Application_Layer/Services/DDB/B_Side/Src/serviceDynamicDeviceBinding_B.c:395:20:I_Am_B_Fill_Structure	2

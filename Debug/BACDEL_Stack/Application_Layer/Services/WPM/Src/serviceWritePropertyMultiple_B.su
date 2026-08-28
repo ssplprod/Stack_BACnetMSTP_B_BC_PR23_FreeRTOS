@@ -1,0 +1,3 @@
+../BACDEL_Stack/Application_Layer/Services/WPM/Src/serviceWritePropertyMultiple_B.c:59:20:WPM_B_Decode_Handler	64	static
+../BACDEL_Stack/Application_Layer/Services/WPM/Src/serviceWritePropertyMultiple_B.c:413:9:WPM_B_Ack_Encoder	88	static
+../BACDEL_Stack/Application_Layer/Services/WPM/Src/serviceWritePropertyMultiple_B.c:529:6:WPM_B_Request_Parser	40	static

@@ -1,0 +1,4 @@
+../BACDEL_Stack/Application_Layer/Services/DOB/Src/serviceDynamicObjectBinding_B.c:64:20:Who_Has_B_Decode_Handler	56	static
+../BACDEL_Stack/Application_Layer/Services/DOB/Src/serviceDynamicObjectBinding_B.c:335:6:Who_Has_B_Request_Parser	40	static
+../BACDEL_Stack/Application_Layer/Services/DOB/Src/serviceDynamicObjectBinding_B.c:428:6:Who_Has_B_Search_Object	56	static
+../BACDEL_Stack/Application_Layer/Services/DOB/Src/serviceDynamicObjectBinding_B.c:579:9:I_Have_B_Request_Encoder	32	static

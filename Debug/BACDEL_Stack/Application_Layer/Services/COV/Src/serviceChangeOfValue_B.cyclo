@@ -1,0 +1,5 @@
+../BACDEL_Stack/Application_Layer/Services/COV/Src/serviceChangeOfValue_B.c:79:20:COV_B_Subscribe_Handler	18
+../BACDEL_Stack/Application_Layer/Services/COV/Src/serviceChangeOfValue_B.c:324:6:COV_Subscribe_Request_Parser	12
+../BACDEL_Stack/Application_Layer/Services/COV/Src/serviceChangeOfValue_B.c:447:6:IsCOVIncrementSupported	2
+../BACDEL_Stack/Application_Layer/Services/COV/Src/serviceChangeOfValue_B.c:477:6:Register_COV_Request	21
+../BACDEL_Stack/Application_Layer/Services/COV/Src/serviceChangeOfValue_B.c:775:6:ValidateCovObject	5

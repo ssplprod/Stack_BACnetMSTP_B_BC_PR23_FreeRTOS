@@ -1,0 +1,14 @@
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:102:16:Encode_Segment	10
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:211:20:APDU_Packet_Encode_Handler	16
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:379:20:Create_APDU_Packets	24
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:670:6:Data_Exchange_A_Side_For_Segmentation	17
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:866:6:Clear_Segmentation_Data_State	4
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:937:6:Clear_Segmentation_Data	31
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:1175:27:Create_LinkList_For_Segmentation	7
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:1294:20:Create_Segmentation_Node	9
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:1425:27:Validate_Segment	15
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:1525:13:Update_ProcessQ_To_Send_SegACK	4
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:1592:20:APDU_Packet_Decode_Handler	32
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:1906:13:Combine_Data_and_Fill_Process_Queue	8
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:2025:6:Update_InitiateQ_State	4
+../BACDEL_Stack/Application_Layer/Segmentation/Src/SegmentationGenericHandler.c:2086:6:Segmentation_Thread_Task	22

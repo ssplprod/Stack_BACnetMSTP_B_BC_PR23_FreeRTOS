@@ -1,0 +1,6 @@
+../BACDEL_Stack/Network_Layer/NPDU/Src/bacnetNPDUHandler.c:76:9:NPDU_Decode_Pdu	104	static
+../BACDEL_Stack/Network_Layer/NPDU/Src/bacnetNPDUHandler.c:328:20:NPDU_Decode_Handler	80	static
+../BACDEL_Stack/Network_Layer/NPDU/Src/bacnetNPDUHandler.c:585:9:NPDU_Encode_Pdu	32	static
+../BACDEL_Stack/Network_Layer/NPDU/Src/bacnetNPDUHandler.c:785:20:NPDU_Encode_Handler	536	static
+../BACDEL_Stack/Network_Layer/NPDU/Src/bacnetNPDUHandler.c:915:6:NPDU_Copy_Data	16	static
+../BACDEL_Stack/Network_Layer/NPDU/Src/bacnetNPDUHandler.c:959:6:NPDU_Set_Data	16	static

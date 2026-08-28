@@ -1,0 +1,2 @@
+../BACDEL_Stack/Application_Layer/APDU/Apdu_Handler/Src/pduError.c:54:9:Error_Encode_Apdu	24	static
+../BACDEL_Stack/Application_Layer/APDU/Apdu_Handler/Src/pduError.c:131:9:Error_Decode_Apdu	32	static

@@ -1,0 +1,3 @@
+../BACDEL_Stack/Api/Src/apiServiceApi.c:63:20:BACDEL_Send_Who_Is	320	static
+../BACDEL_Stack/Api/Src/apiServiceApi.c:199:20:BACDEL_Send_I_Am	320	static
+../BACDEL_Stack/Api/Src/apiServiceApi.c:327:21:BACDEL_Send_I_Have	320	static

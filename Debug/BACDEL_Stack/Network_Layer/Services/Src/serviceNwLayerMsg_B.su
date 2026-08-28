@@ -1,0 +1,6 @@
+../BACDEL_Stack/Network_Layer/Services/Src/serviceNwLayerMsg_B.c:77:20:WHO_IS_Router_To_Nw_Decode_Handler	40	static
+../BACDEL_Stack/Network_Layer/Services/Src/serviceNwLayerMsg_B.c:177:20:What_Is_Nw_No_Decode_Handler	32	static
+../BACDEL_Stack/Network_Layer/Services/Src/serviceNwLayerMsg_B.c:252:20:Router_Busy_To_Network_Decode_Handler	72	static
+../BACDEL_Stack/Network_Layer/Services/Src/serviceNwLayerMsg_B.c:381:20:Router_Available_To_Network_Decode_Handler	72	static
+../BACDEL_Stack/Network_Layer/Services/Src/serviceNwLayerMsg_B.c:509:20:Network_Number_Is_Decode_Handler	72	static
+../BACDEL_Stack/Network_Layer/Services/Src/serviceNwLayerMsg_B.c:592:20:NPDU_NwLayer_Msg_Decode_Handler	32	static

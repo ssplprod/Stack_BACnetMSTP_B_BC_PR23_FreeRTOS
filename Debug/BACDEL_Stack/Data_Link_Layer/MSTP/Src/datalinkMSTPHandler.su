@@ -1,0 +1,5 @@
+../BACDEL_Stack/Data_Link_Layer/MSTP/Src/datalinkMSTPHandler.c:63:9:CalHeaderCRC	32	static
+../BACDEL_Stack/Data_Link_Layer/MSTP/Src/datalinkMSTPHandler.c:203:10:CalDataCRC	32	static
+../BACDEL_Stack/Data_Link_Layer/MSTP/Src/datalinkMSTPHandler.c:313:20:MSTP_SendDataOnSerialBus	32	static
+../BACDEL_Stack/Data_Link_Layer/MSTP/Src/datalinkMSTPHandler.c:379:20:MSTP_Decode_Handler	32	static
+../BACDEL_Stack/Data_Link_Layer/MSTP/Src/datalinkMSTPHandler.c:519:20:MSTP_Encode_Handler	576	static

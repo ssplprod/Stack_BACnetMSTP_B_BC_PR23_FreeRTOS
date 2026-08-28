@@ -1,0 +1,8 @@
+../BACDEL_Stack/Test_API/Src/TestServiceAPI.c:304:20:WhoIs_A_Request	64	static
+../BACDEL_Stack/Test_API/Src/TestServiceAPI.c:338:20:IAm_Request	48	static
+../BACDEL_Stack/Test_API/Src/TestServiceAPI.c:366:10:Generate_Request_ID	16	static
+../BACDEL_Stack/Test_API/Src/TestServiceAPI.c:393:7:Memory_Allocate	24	static
+../BACDEL_Stack/Test_API/Src/TestServiceAPI.c:412:6:Memory_Free	24	static
+../BACDEL_Stack/Test_API/Src/TestServiceAPI.c:433:9:Reverse_Bits_In_Byte	24	static
+../BACDEL_Stack/Test_API/Src/TestServiceAPI.c:474:6:Parse_BitString_From_Csv	344	static
+../BACDEL_Stack/Test_API/Src/TestServiceAPI.c:546:7:Convert_StrVal_to_Strucure	1456	static

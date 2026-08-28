@@ -1,0 +1,4 @@
+../BACDEL_Stack/Application_Layer/Services/GEI/B_Side/Src/serviceGetEventInformation_B.c:65:20:GEI_B_Decode_Handler	40	static
+../BACDEL_Stack/Application_Layer/Services/GEI/B_Side/Src/serviceGetEventInformation_B.c:185:6:GEI_B_Request_Parser	64	static
+../BACDEL_Stack/Application_Layer/Services/GEI/B_Side/Src/serviceGetEventInformation_B.c:871:9:GEI_B_Ack_Encoder	552	static
+../BACDEL_Stack/Application_Layer/Services/GEI/B_Side/Src/serviceGetEventInformation_B.c:1067:6:GEI_B_Fill_Event_Information_Data	64	static

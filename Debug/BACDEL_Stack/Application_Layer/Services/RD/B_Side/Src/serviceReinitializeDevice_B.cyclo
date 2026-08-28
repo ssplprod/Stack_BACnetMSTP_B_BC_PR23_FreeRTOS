@@ -1,0 +1,6 @@
+../BACDEL_Stack/Application_Layer/Services/RD/B_Side/Src/serviceReinitializeDevice_B.c:81:20:RD_B_Decode_Handler	11
+../BACDEL_Stack/Application_Layer/Services/RD/B_Side/Src/serviceReinitializeDevice_B.c:250:13:RD_B_Validate_Dv_Password	4
+../BACDEL_Stack/Application_Layer/Services/RD/B_Side/Src/serviceReinitializeDevice_B.c:305:6:RD_B_Validate_Received_ReInit_State	12
+../BACDEL_Stack/Application_Layer/Services/RD/B_Side/Src/serviceReinitializeDevice_B.c:540:6:RD_B_Activate_Changes	19
+../BACDEL_Stack/Application_Layer/Services/RD/B_Side/Src/serviceReinitializeDevice_B.c:716:6:RD_B_Request_Parser	14
+../BACDEL_Stack/Application_Layer/Services/RD/B_Side/Src/serviceReinitializeDevice_B.c:951:6:ReInitializeDevice	3

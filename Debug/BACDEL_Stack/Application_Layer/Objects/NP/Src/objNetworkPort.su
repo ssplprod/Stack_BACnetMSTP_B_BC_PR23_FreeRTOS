@@ -1,0 +1,8 @@
+../BACDEL_Stack/Application_Layer/Objects/NP/Src/objNetworkPort.c:107:6:NetworkPort_Property_Lists	24	static
+../BACDEL_Stack/Application_Layer/Objects/NP/Src/objNetworkPort.c:156:20:NetworkPort_Add_Object	40	static
+../BACDEL_Stack/Application_Layer/Objects/NP/Src/objNetworkPort.c:291:20:NetworkPort_Delete_Object	32	static
+../BACDEL_Stack/Application_Layer/Objects/NP/Src/objNetworkPort.c:352:6:NetworkPort_Initialize_Properties	104	static
+../BACDEL_Stack/Application_Layer/Objects/NP/Src/objNetworkPort.c:517:6:NetworkPort_Check_Duplicate_BDT_Entry	24	static
+../BACDEL_Stack/Application_Layer/Objects/NP/Src/objNetworkPort.c:552:6:NetworkPort_Write_Property	80	static
+../BACDEL_Stack/Application_Layer/Objects/NP/Src/objNetworkPort.c:1193:20:NetworkPort_Activate_BDT_Changes	40	static
+../BACDEL_Stack/Application_Layer/Objects/NP/Src/objNetworkPort.c:1271:6:Update_BBMD_File	32	static

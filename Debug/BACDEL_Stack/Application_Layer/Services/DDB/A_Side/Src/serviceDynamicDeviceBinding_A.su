@@ -1,0 +1,3 @@
+../BACDEL_Stack/Application_Layer/Services/DDB/A_Side/Src/serviceDynamicDeviceBinding_A.c:59:9:Who_Is_A_Request_Encoder	32	static
+../BACDEL_Stack/Application_Layer/Services/DDB/A_Side/Src/serviceDynamicDeviceBinding_A.c:116:20:I_Am_A_Decode_Handler	56	static
+../BACDEL_Stack/Application_Layer/Services/DDB/A_Side/Src/serviceDynamicDeviceBinding_A.c:303:6:I_AM_A_Request_Parser	96	static

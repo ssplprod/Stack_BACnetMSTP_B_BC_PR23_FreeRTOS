@@ -1,0 +1,15 @@
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:77:13:Update_Database_Revision	32	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:144:6:Update_Device_Object_List	32	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:232:13:Modify_Device_ObjectList	40	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:300:7:Sort_Object_List	80	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:528:7:Traverse_Object_List	48	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:719:6:Init_Required_Properties	56	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:779:13:Init_Priority_Array	160	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:845:13:Init_Relinquish_Default	112	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:940:13:Init_Present_Value	88	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:1037:6:Init_Property_List	56	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:1088:13:Init_Object_Property	392	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:1869:13:Init_Object_All_Properties	192	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:2167:20:Create_Object	72	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:2407:20:Remove_Object	64	static
+../BACDEL_Stack/Application_Layer/Objects/Common/Src/objGenericHandler.c:2526:6:Delete_Object_Properties	32	static

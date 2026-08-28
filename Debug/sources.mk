@@ -1,0 +1,103 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+# Toolchain: GNU Tools for STM32 (13.3.rel1)
+################################################################################
+
+C++M_SRCS := 
+CPP_SRCS := 
+S_UPPER_SRCS := 
+O_SRCS := 
+ELF_SRCS := 
+C_UPPER_SRCS := 
+CXX_SRCS := 
+CCM_SRCS := 
+C++_SRCS := 
+OBJ_SRCS := 
+S_SRCS := 
+CC_SRCS := 
+C_SRCS := 
+CXXM_SRCS := 
+CYCLO_FILES := 
+OBJDUMP_LIST := 
+CCM_DEPS := 
+C_UPPER_DEPS := 
+S_DEPS := 
+CXXM_DEPS := 
+C_DEPS := 
+OBJCOPY_BIN := 
+CC_DEPS := 
+OBJCOPY_HEX := 
+SIZE_OUTPUT := 
+C++_DEPS := 
+SU_FILES := 
+EXECUTABLES := 
+OBJS := 
+CXX_DEPS := 
+MAP_FILES := 
+S_UPPER_DEPS := 
+C++M_DEPS := 
+CPP_DEPS := 
+
+# Every subdirectory with source files must be described here
+SUBDIRS := \
+BACDEL_App/src \
+BACDEL_Stack/Api/Src \
+BACDEL_Stack/Application_Layer/APDU/Apdu_Handler/Src \
+BACDEL_Stack/Application_Layer/APDU/Data_Types/Src \
+BACDEL_Stack/Application_Layer/APDU/Encode_Decode/Src \
+BACDEL_Stack/Application_Layer/Objects/AI/Src \
+BACDEL_Stack/Application_Layer/Objects/AO/Src \
+BACDEL_Stack/Application_Layer/Objects/AV/Src \
+BACDEL_Stack/Application_Layer/Objects/BI/Src \
+BACDEL_Stack/Application_Layer/Objects/BO/Src \
+BACDEL_Stack/Application_Layer/Objects/BV/Src \
+BACDEL_Stack/Application_Layer/Objects/CAL/Src \
+BACDEL_Stack/Application_Layer/Objects/Common/Src \
+BACDEL_Stack/Application_Layer/Objects/Device/Src \
+BACDEL_Stack/Application_Layer/Objects/EE/Src \
+BACDEL_Stack/Application_Layer/Objects/MSI/Src \
+BACDEL_Stack/Application_Layer/Objects/MSO/Src \
+BACDEL_Stack/Application_Layer/Objects/MSV/Src \
+BACDEL_Stack/Application_Layer/Objects/NC/Src \
+BACDEL_Stack/Application_Layer/Objects/NP/Src \
+BACDEL_Stack/Application_Layer/Objects/SCHDL/Src \
+BACDEL_Stack/Application_Layer/Properties/Src \
+BACDEL_Stack/Application_Layer/Segmentation/Src \
+BACDEL_Stack/Application_Layer/Services/AA/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/COV/Src \
+BACDEL_Stack/Application_Layer/Services/Common/Src \
+BACDEL_Stack/Application_Layer/Services/DCC/Src \
+BACDEL_Stack/Application_Layer/Services/DDB/A_Side/Src \
+BACDEL_Stack/Application_Layer/Services/DDB/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/DOB/Src \
+BACDEL_Stack/Application_Layer/Services/EN/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/EventReporting/Src \
+BACDEL_Stack/Application_Layer/Services/GEI/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/RD/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/RP/A_Side/Src \
+BACDEL_Stack/Application_Layer/Services/RP/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/RPM/A_Side/Src \
+BACDEL_Stack/Application_Layer/Services/RPM/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/Scheduling/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/TS/Src \
+BACDEL_Stack/Application_Layer/Services/UTC/Src \
+BACDEL_Stack/Application_Layer/Services/WP/A_Side/Src \
+BACDEL_Stack/Application_Layer/Services/WP/B_Side/Src \
+BACDEL_Stack/Application_Layer/Services/WPM/Src \
+BACDEL_Stack/Application_Layer/Stack_Mgmt/Src \
+BACDEL_Stack/Data_Link_Layer/MSTP/Src \
+BACDEL_Stack/Misc/Src \
+BACDEL_Stack/Network_Layer/NPDU/Src \
+BACDEL_Stack/Network_Layer/Services/Src \
+BACDEL_Stack/Osal/Src \
+BACDEL_Stack/Test_API/Src \
+Core/Src \
+Core/Startup \
+Drivers/BSP/Components/LED \
+Drivers/BSP/STM32H5xx_Nucleo \
+Drivers/STM32H5xx_HAL_Driver/Src \
+Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 \
+Middlewares/Third_Party/FreeRTOS/Source \
+Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM33_NTZ/non_secure \
+Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang \
+

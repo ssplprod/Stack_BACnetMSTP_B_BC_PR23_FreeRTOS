@@ -1,0 +1,14 @@
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:49:6:Osal_Sleep	1
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:61:9:Osal_Wait_Mutex	1
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:77:9:Osal_Release_Mutex	1
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:92:9:Osal_Close_Mutex	1
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:109:6:OSAL_Release_Sem	2
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:129:9:OSAL_Wait_Sem	2
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:146:6:OSAL_Close_Sem	2
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:166:7:OSAL_SuspendThread	1
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:184:6:Osal_Thread_Terminate	2
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:197:7:OSAL_Realloc	1
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:211:7:OSAL_Malloc	3
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:242:6:OSAL_Free	2
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:255:6:OSAL_Delete_Timer_Queue_Timer	1
+../BACDEL_Stack/Osal/Src/osalFreeRTOS.c:261:6:OSAL_Delete_Message_Queue	1
