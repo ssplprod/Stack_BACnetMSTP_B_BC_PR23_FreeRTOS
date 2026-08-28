@@ -1,0 +1,1017 @@
+/**********************************************************************************
+*                                                                        
+*                   Copyright (c) by SoftDEL Systems Ltd.               
+*                                                                        
+*   This software is copyrighted by and is the sole property of SoftDEL
+*   Systems Ltd. All rights, title, ownership, or other interests in the 
+*   software remain the property of  SoftDEL Systems Ltd. This software 
+*   may only be used in accordance with the corresponding license 
+*   agreement. Any unauthorized use, duplication, transmission,
+*   distribution, or disclosure of this software is expressly forbidden.  
+*                                                                        
+*   This Copyright notice may not be removed or modified without prior    
+*   written consent of SoftDEL Systems Ltd.                                
+*                                                                        
+*   SoftDEL Systems Ltd. reserves the right to modify this software        
+*   without notice.                                                       
+*                                                                        
+*   SoftDEL Systems Ltd.						india@softdel.com         
+*   3rd Floor, Pentagon P4,						http://www.softdel.com  
+*   Magarpatta City, Hadapsar
+*   Pune - 411 028                                
+*                                                                         
+*   FILE
+*	bacnetNPDUHandler.c
+*                                                                      
+*   AUTHORS                                                                     
+*	Prashant Badgujar, Ashish Verma
+*                                                                         
+*   DESCRIPTION                                                            
+*	Functions for Encoding and Decoding of NPDU layer header.
+*
+**********************************************************************************/
+
+/** include header files */
+#include "bacnetNPDUHandler.h"
+#include "pduEncodeDecode.h"
+#include "pduDataType.h"
+#include "bacnetAPDUHandler.h"
+#include "bacDELDeviceConfig.h"
+#include "bacnetDeviceMgmtInterface.h"
+#include "objDevice.h"
+#include <string.h>
+
+
+/** include file for n/w layer protocol messages B-side */
+#ifdef NETWORK_LAYER_MESSAGE_B
+#include "serviceNwLayerMsg_B.h"
+#endif
+/** Global variable for device virtual and local network numbers */
+extern uint16_t g_u16VirtualNWNo;
+#ifdef SUPPORT_MULTIPLE_DEVICE
+extern uint16_t g_u16LocalNWNo;
+#endif
+
+/** Global variable for vendor id */
+extern uint16_t g_u16VendorID;
+extern BACNET_RETURN_TYPE MSTP_Encode_Handler(
+	processInfo_t *pstMstpProcInfo,
+	uint8_t *pu8DataBuffer,
+	uint16_t u16DataBufLen);
+/**
+*
+* DESCRIPTION 
+* Decode the NPDU portion of a received message, particularly the NCPI byte.
+* The Network Layer Protocol Control Information byte is described 
+* in section 6.2.2 of the BACnet standard.
+*
+* @param pstDestAddress [in] To save destination information
+* @param pstSrcAddress  [in] To save source information
+* @param pstNpduData    [in] To save decoded NPDU data
+* @param pu8PduData     [in] Received data
+
+* @return i32Len [out] Number of bytes decoded, 0 or -ve if error.
+*
+*/
+int32_t NPDU_Decode_Pdu(
+	uint8_t *pu8PduData,
+    BACnetAddress_t *pstDestAddress,
+    BACnetAddress_t *pstSrcAddress,
+    Bacnet_Npdu_Data_t *pstNpduData)
+{
+    /* local variables */
+    int32_t i32Len = 0;        
+    uint16_t u16SrcNet = 0;
+    uint16_t u16DestNet = 0;
+    uint8_t u8AddressLen = 0;
+    uint8_t u8MacOctet = 0;
+	uint8_t u8Count = 0;
+	
+	/* function entry */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Decode_Pdu: Entry \r\n");
+	#endif
+
+	/* check input pointers */
+    if(NULL == pu8PduData || NULL == pstNpduData) 
+    {
+		/* null input pointers */
+		#ifdef DEBUG_PRINTF
+		Print_DebugMsg(DEBUG_LEVEL0, "BACnetStackNWLayer: \
+		NPDU_Decode_Pdu: Null input pointers \r\n");
+		#endif
+		return i32Len;
+	}
+
+    /* Protocol Version */
+    pstNpduData->protocol_version = pu8PduData[0];
+
+	/* control octet */
+	/* 
+	Bit 7: 
+	1 = indicates that the NSDU conveys a network layer message. message type field is present.
+    0 = indicates that the NSDU contains a BACnet APDU. message type field is absent.
+	*/
+    pstNpduData->network_layer_message = (pu8PduData[1] & BIT7) ? true : false;
+
+    /* Bit 6: reserved. shall be zero. */
+    /* Bit 4: reserved. shall be zero. */
+
+	/* 
+	Bit 2: The value of this bit corresponds to the data_expecting_reply 
+	parameter in the N-UNITDATA primitives.
+    1 = indicates that a BACnet-Confirmed-Request-PDU, a segment of a 
+	BACnet-ComplexACK-PDU, or a network layer message expecting a reply is present.
+    0 = indicates that other than a BACnet-Confirmed-Request-PDU, a segment of a 
+	BACnet-ComplexACK-PDU, or a network layer message expecting a reply is present. 
+	*/
+    pstNpduData->data_expecting_reply = (pu8PduData[1] & BIT2) ? true : false;
+
+    /* 
+	Bits 1,0: Network priority where:
+    B'11' = Life Safety message
+    B'10' = Critical Equipment message
+    B'01' = Urgent message
+    B'00' = Normal message 
+	*/
+    pstNpduData->priority = (BACNET_MESSAGE_PRIORITY) (pu8PduData[1] & 0x03);
+
+    /* set the offset to where the optional stuff starts */
+    i32Len = 2;
+
+    /* Bit 5: destination specifier where:
+	0 = DNET, DLEN, DADR, and Hop Count absent
+	1 = DNET, DLEN, and Hop Count present
+	DLEN = 0 denotes broadcast MAC i.e. DARD is absent
+	DLEN > 0 specifies length of DADR field
+	*/
+    if(pu8PduData[1] & BIT5) 
+    {
+		/* set the flag to indicate that DNET, DADR, Hop Count, etc are present */
+        pstNpduData->m_bDestPresent = true;
+
+		/* decode DNET */
+        i32Len += Decode_Unsigned16(&pu8PduData[i32Len], &u16DestNet);
+        /* DLEN = 0 denotes broadcast MAC i.e. DARD is absent */
+        /* DLEN > 0 specifies length of DADR field */
+        u8AddressLen = pu8PduData[i32Len++];
+        if(pstDestAddress) 
+        {
+			/* save decoded data */
+            pstDestAddress->u16net = u16DestNet;
+            pstDestAddress->u8dlen = u8AddressLen;
+        }
+
+		/* decode DADR if present */
+        if(u8AddressLen) 
+        {
+			/* validate length */
+            if(u8AddressLen > MAX_MAC_LEN) 
+            {
+                /* address is too large, could be a malformed message */
+				#ifdef DEBUG_PRINTF
+				Print_DebugMsg(DEBUG_LEVEL1, "BACnetStackNWLayer: \
+				NPDU_Decode_Pdu: DADR is too large \r\n");
+				#endif
+                return -1;
+            }
+
+            for (u8Count = 0; u8Count < u8AddressLen; u8Count++) 
+            {
+				/* get byte & check pointer */
+                u8MacOctet = pu8PduData[i32Len++];
+                if(pstDestAddress)
+				{
+					/* copy value */
+                    pstDestAddress->u8DvDadr[u8Count] = u8MacOctet;
+				}
+            }
+        }
+    }
+    else if(pstDestAddress) 
+    {
+		/* reset the flag to indicate that DNET, DADR, Hop Count, etc are absent */
+        pstNpduData->m_bDestPresent = false;
+
+		/* save default values */
+        pstDestAddress->u16net = 0;
+        pstDestAddress->u8dlen = 0;
+        for(u8Count = 0; u8Count < MAX_MAC_LEN; u8Count++) 
+        {
+			/* set the value to 0 */
+            pstDestAddress->u8DvDadr[u8Count] = 0;
+        }
+    }
+
+
+	/* Bit 3: Source specifier where:
+	0 =  SNET, SLEN, and SADR absent
+	1 =  SNET, SLEN, and SADR present
+	SLEN = 0 Invalid
+	SLEN > 0 specifies length of SADR field 
+	*/
+    if (pu8PduData[1] & BIT3) 
+    {
+    	uint8_t testarray[50]={0};
+    	memcpy(testarray,pu8PduData,sizeof(testarray));
+
+		/* decode SNET */
+        i32Len += Decode_Unsigned16(&pu8PduData[i32Len], &u16SrcNet);
+        /* SLEN = 0 denotes broadcast MAC i.e. SADR field is absent */
+        /* SLEN > 0 specifies length of SADR field */
+        u8AddressLen = pu8PduData[i32Len++];
+        if(pstSrcAddress) 
+        {
+			/* save decoded data */
+            pstSrcAddress->u16net = u16SrcNet;
+            pstSrcAddress->u8dlen = u8AddressLen;
+        }
+
+		/* decode SADR if present */
+        if(u8AddressLen) 
+        {
+			/* validate length */
+            if(u8AddressLen > MAX_MAC_LEN) 
+            {
+                /* address is too large, could be a malformed message */
+				#ifdef DEBUG_PRINTF
+				Print_DebugMsg(DEBUG_LEVEL1, "BACnetStackNWLayer: \
+				NPDU_Decode_Pdu: SADR is too large \r\n");
+				#endif
+                return -1;
+            }
+
+            for (u8Count = 0; u8Count < u8AddressLen; u8Count++) 
+            {
+				/* get byte & check pointer */
+                u8MacOctet = pu8PduData[i32Len++];
+                if(pstSrcAddress)
+				{
+					/* copy value */
+                    pstSrcAddress->u8DvDadr[u8Count] = u8MacOctet;
+				}
+            }
+        }
+    } 
+    else if (pstSrcAddress) 
+    {
+		/* save default values */
+        pstSrcAddress->u16net = 0;
+        pstSrcAddress->u8dlen = 0;
+        for (u8Count = 0; u8Count < MAX_MAC_LEN; u8Count++) 
+        {
+            pstSrcAddress->u8DvDadr[u8Count] = 0;
+        }
+    }
+
+    /* the Hop Count field shall be present only if the message is 
+    destined for a remote network, i.e., if DNET is present.
+    This is a one-octet field that is initialized to a value of 0XFF. */
+    if (pu8PduData[1] & BIT5) 
+    {
+		/* decode hop count */
+        pstNpduData->hopcount = pu8PduData[i32Len++];
+    } 
+    else 
+    {
+		/* default hop count */
+		pstNpduData->hopcount = UINT8_MAX;
+    }
+
+    /* check if the NSDU conveys a network layer message */
+    /* message type field is present or absent */
+    if(pstNpduData->network_layer_message) 
+    {
+		/* decode message type */
+        pstNpduData->network_message_type =
+            (BACNET_NETWORK_MESSAGE_TYPE) pu8PduData[i32Len++];
+        /* message type field contains a value in the range 0x80 - 0xff,
+        then a vendor id field shall be present */
+        if (pstNpduData->network_message_type >= 0x80)
+		{
+			/* decode vendor id */
+            i32Len += Decode_Unsigned16(&pu8PduData[i32Len], &pstNpduData->vendor_id);
+		}
+    } 
+    else 
+    {
+        /* this is not network layer message */
+		/* this message contains APDU data */
+        pstNpduData->network_message_type = NETWORK_MESSAGE_INVALID;
+    }
+
+	/* function exit */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Decode_Pdu: Exit \r\n");
+	#endif
+    return i32Len;
+}
+
+/**
+*
+* DESCRIPTION 
+* Handles messages at the decode NPDU level of the BACnet stack. 
+* This API decodes the messages that are coming from BVLC layer
+* handler and construct APDU packets for processing by APDU layes handler.
+*                                                  
+* @param pu8PduData [in] Received PDU containing NPDU and APDU data
+* @param u16PduLen  [in] No. of bytes recived
+* @param pstNpduProcInfo [in/out] Pointer to process queue node to save data
+*
+* @return  [out]  BACNET_RETURN_TYPE enumerations
+* This function is called from process (Px) thread:
+* - BACDEL_SUCCESS will trigger Tx thread to send response
+* - BACDEL_CONTINUE will do nothing
+* - BACDEL_ERROR or any other value will free Px-Q node
+*
+*/
+BACNET_RETURN_TYPE NPDU_Decode_Handler(
+    processInfo_t *pstNpduProcInfo,
+    uint8_t *pu8PduData,
+    uint16_t u16PduLen)
+{
+	/* local variables */
+	bool bCheckDevVT = true;
+    bool bDADRPresent = false;
+    int16_t u16ApduOffset = 0;
+    BACnetAddress_t stDestAddress = {0};
+    Bacnet_Npdu_Data_t stNpduData = {0};
+    BACNET_RETURN_TYPE eReturnValue = BACDEL_SUCCESS;
+	DESTINATION_TYPE eBkpDestType = DESTINATION_IS_UNICAST;
+
+	/* function entry */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Decode_Handler: Entry \r\n");
+	#endif
+
+    /* check for valid buffter pointers for device data & npdu+apdu information */
+    if((NULL == pstNpduProcInfo) || (NULL == pu8PduData))
+    {
+		/* null input pointers */
+		#ifdef DEBUG_PRINTF
+		Print_DebugMsg(DEBUG_LEVEL0, "BACnetStackNWLayer: \
+		NPDU_Decode_Handler: Null input pointers \r\n");
+		#endif
+		return BACDEL_ERROR;
+	}
+
+    /* only handle the version that we know how to handle */
+    if(pu8PduData[0] != BACNET_PROTOCOL_VERSION)
+    {
+		/* incorrect protocol version */
+		#ifdef DEBUG_PRINTF
+        Print_DebugMsg(DEBUG_LEVEL1, "BACnetStackNWLayer: \
+		NPDU_Decode_Handler: Protocol-Version error \r\n");
+		#endif
+        return BACDEL_ERROR;
+	}
+
+    /* decode the npdu header of a received message */
+    u16ApduOffset = (uint16_t)NPDU_Decode_Pdu(&pu8PduData[0], &stDestAddress, 
+        &pstNpduProcInfo->m_stProcessData.m_stRmDvAddr, &stNpduData);
+    if(u16ApduOffset <= 0 || stNpduData.hopcount == 0 || stNpduData.hopcount == 1)
+    {
+		#ifdef DEBUG_PRINTF
+        Print_DebugMsg(DEBUG_LEVEL1, "BACnetStackNWLayer: \
+		NPDU_Decode_Handler: NPDU decoding failed or Hop count limit reached \r\n");
+		#endif
+        return BACDEL_ERROR;
+    }
+
+	/* check if DADR is present or not */
+    if(stDestAddress.u8dlen > 0)
+	{
+		/* DADR is present, this request is for VDs */
+        bDADRPresent = true;
+	}
+
+	#ifdef SUPPORT_MULTIPLE_DEVICE
+	/* each router the message passes through shall decrement the hop count */
+    stNpduData.hopcount--;
+    if(stNpduData.hopcount <= 1)
+        stNpduData.hopcount = 2;
+	#endif
+
+	/* backup the destination type */
+	eBkpDestType = pstNpduProcInfo->m_stProcessData.m_stNPDU.eDestinationType;
+
+    /* fill in the destination address & npdu data */
+    pstNpduProcInfo->m_stProcessData.m_stIUTAddr = stDestAddress;
+    pstNpduProcInfo->m_stProcessData.m_stNPDU = stNpduData;
+
+	/* restore the destination type */
+	pstNpduProcInfo->m_stProcessData.m_stNPDU.eDestinationType = eBkpDestType;
+
+    /* handle network layer message */
+    if(stNpduData.network_layer_message) 
+    {
+#if 0 //To discard Network number request
+		/* I-Am-Router-To-Network */
+		if(NETWORK_MESSAGE_I_AM_ROUTER_TO_NETWORK ==
+			stNpduData.network_message_type)
+		{
+			/* decode I-Am-Router-To-Network */
+			#ifdef NETWORK_LAYER_MESSAGE_A
+			I_AM_Router_To_Nw_Decode_Handler(pstNpduProcInfo, &pu8PduData[u16ApduOffset], 
+				(u16PduLen - u16ApduOffset));
+			#endif
+			;//dummy statement
+		}
+		/* Who-Is-Router-To-Network */
+        else if(NETWORK_MESSAGE_WHO_IS_ROUTER_TO_NETWORK ==
+			stNpduData.network_message_type)
+        {
+			/* decode Who-Is-Router-To-Network */
+			#ifdef NETWORK_LAYER_MESSAGE_B
+			WHO_IS_Router_To_Nw_Decode_Handler(pstNpduProcInfo, &pu8PduData[u16ApduOffset], 
+				(u16PduLen - u16ApduOffset));
+			#endif
+			;//dummy statement
+        }
+		else if(stNpduData.network_message_type > 
+			NETWORK_MESSAGE_DISCONNECT_CONNECTION_TO_NETWORK)
+        {
+			/* unsupported network layer message */
+			/* send Reject-Message-To-Network */
+            pstNpduProcInfo->m_stProcessData.m_stNPDU.network_layer_message = true;
+            pstNpduProcInfo->m_stProcessData.m_stNPDU.u8NwMsgRejectReason = 
+                NW_MSG_REJECT_REASON_UNKNOWN_MSG;
+            pstNpduProcInfo->m_stProcessData.m_stNPDU.network_message_type = 
+                NETWORK_MESSAGE_REJECT_MESSAGE_TO_NETWORK;
+            pstNpduProcInfo->m_stProcessData.m_stIUTAddr.u8dlen = 0;
+            /* unsupported network layer message debug log */
+			#ifdef DEBUG_PRINTF
+            Print_DebugMsg(DEBUG_LEVEL1, "BACnetStackNWLayer: \
+			NPDU_Decode_Handler: Discard unknown network layer message \r\n");
+			#endif
+			/* return success to send response */
+            return BACDEL_SUCCESS;
+        }
+
+		/* return error to discard these packets */
+        eReturnValue = BACDEL_ERROR;
+#else
+		eReturnValue = NPDU_NwLayer_Msg_Decode_Handler(pstNpduProcInfo, pu8PduData, u16PduLen, &stNpduData, u16ApduOffset);
+#endif
+    } 
+    else if((u16ApduOffset > 0) && (u16ApduOffset <= u16PduLen)) 
+    {
+        /* validate combinations of DNET and DADR for processing request
+        1. DNET & DADR Absent
+        2. DNET is 0 or Local N/W number & DADR is Absent
+        3. DNET is Global Broadcast
+        4. DNET is Virtual N/W Number (DADR is validated Later)
+        */
+        if(
+            #ifdef SUPPORT_MULTIPLE_DEVICE
+            stNpduData.m_bDestPresent == false ||
+            ((stDestAddress.u16net == g_u16LocalNWNo || 
+            stDestAddress.u16net == BACNET_LOCAL_BROADCAST_NETWORK_NO) && bDADRPresent == false) ||
+            #endif
+            stDestAddress.u16net == BACNET_GLOBAL_BROADCAST_NETWORK_NO ||
+            stDestAddress.u16net == g_u16VirtualNWNo
+            )
+        {
+            /* check if this device is valid device */
+            bCheckDevVT = Device_Look_Up(pstNpduProcInfo, bDADRPresent);  
+
+
+			/* for pure IP device discard unicast requests with DNET */
+			#ifndef SUPPORT_MULTIPLE_DEVICE
+			if(BVLC_ORIGINAL_UNICAST_NPDU == pstNpduProcInfo->m_stProcessData.m_eBVLCFunctionType
+				&& pstNpduProcInfo->m_stProcessData.m_stNPDU.m_bDestPresent)
+			{
+				/* discard the request */
+				bCheckDevVT = false;
+			}
+			#endif
+
+            if(bCheckDevVT == true )
+            {
+                /* pass the data to APDU layer for further decoding & processing */
+                eReturnValue = APDU_Decode_Handler(pstNpduProcInfo, 
+					&pu8PduData[u16ApduOffset], (u16PduLen - u16ApduOffset));
+                if(BACDEL_SUCCESS != eReturnValue)
+                {
+					;//dummy statement
+					#ifdef DEBUG_PRINTF
+                    Print_DebugMsg(DEBUG_LEVEL2, "BACnetStackNWLayer: \
+					NPDU_Decode_Handler: APDU_Decode_Handler error \r\n");     
+					#endif
+                }
+            }
+            else
+            {
+                /* virtual device is not present in device virtual table */
+				/* request is incorrect */
+				#ifdef DEBUG_PRINTF
+                Print_DebugMsg(DEBUG_LEVEL2, "BACnetStackNWLayer: \
+				NPDU_Decode_Handler: Device is not present \r\n");
+				#endif
+                eReturnValue = BACDEL_ERROR;
+            }
+        }
+        else 
+        {
+            /* send Reject-Message-To-Network, if unicast request(i.e. DADR present) */
+            if(true == bDADRPresent && true == stNpduData.data_expecting_reply &&
+                stDestAddress.u16net != BACNET_LOCAL_BROADCAST_NETWORK_NO && 
+                stDestAddress.u16net != BACNET_GLOBAL_BROADCAST_NETWORK_NO)
+            {
+                /* check for known network number */
+                if(BACDEL_SUCCESS != BACDEL_Get_Router_Address_From_Network_No
+					(stDestAddress.u16net, &stDestAddress))
+                {
+					#ifdef SUPPORT_MULTIPLE_DEVICE
+					/* unknown DNET */
+					/* send Reject-Message-To-Network */
+                    pstNpduProcInfo->m_stProcessData.m_stNPDU.network_layer_message = true;
+                    pstNpduProcInfo->m_stProcessData.m_stNPDU.u8NwMsgRejectReason = 
+                        NW_MSG_REJECT_REASON_UNKNOWN_DNET;
+                    pstNpduProcInfo->m_stProcessData.m_stNPDU.network_message_type = 
+                        NETWORK_MESSAGE_REJECT_MESSAGE_TO_NETWORK;
+					/* return success to send response */
+                    return BACDEL_SUCCESS;
+					#else
+					/* return error message */
+					eReturnValue = BACDEL_ERROR; 
+					#endif
+                }
+            }
+
+			/* return error to discard these packets */
+			#ifdef DEBUG_PRINTF
+            Print_DebugMsg(DEBUG_LEVEL1, "BACnetStackNWLayer: \
+			NPDU_Decode_Handler: Incorrect DNET received \r\n");
+			#endif
+            eReturnValue = BACDEL_ERROR;                        
+        }
+    }
+    else
+    {
+		/* error decoding NPDU data, discard the packet */
+		#ifdef DEBUG_PRINTF
+        Print_DebugMsg(DEBUG_LEVEL2, "BACnetStackNWLayer: \
+		NPDU_Decode_Handler: Incorrect data received, error decoding NPDU \r\n");
+		#endif
+        eReturnValue = BACDEL_ERROR;
+    }
+
+	/* function exit */
+	#ifdef DEBUG_PRINTF
+    Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Decode_Handler: Exit \r\n");
+	#endif
+    return eReturnValue;
+}
+
+/**
+*
+* DESCRIPTION 
+* Encode the NPDU portion of a message to be sent, based on the NPDU data
+* and associated data.
+* If this is to be a Network Layer Control Message, there are probably
+* more bytes which will need to be encoded following the ones encoded here.
+* The Network Layer Protocol Control Information byte is described 
+* in section 6.2.2 of the BACnet standard.
+*
+* @param pstDestAddress [in] Destination information
+* @param pstSrcAddress  [in] Source information
+* @param pstNpduData    [in] NPDU data to be encoded
+* @param pu8NpduBuffer [out] Buffer to save encoded data
+
+* @return i32Len [out] Number of bytes encoded, 0 or -ve if error.
+*
+*/
+int32_t NPDU_Encode_Pdu(
+	uint8_t *pu8NpduBuffer,
+    BACnetAddress_t *pstDestAddress,
+    BACnetAddress_t *pstSrcAddress,
+    Bacnet_Npdu_Data_t *pstNpduData)
+{
+    /* local variables */
+    int32_t i32Len = 0;   
+    uint8_t u8Count = 0;      
+
+	/* function entry */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Encode_Pdu: Entry \r\n");
+	#endif
+
+	/* check input pointers */
+    if(NULL == pu8NpduBuffer || NULL == pstNpduData) 
+    {
+		/* null input pointer */
+		#ifdef DEBUG_PRINTF
+		Print_DebugMsg(DEBUG_LEVEL0, "BACnetStackNWLayer: \
+		NPDU_Encode_Pdu: Null input pointers \r\n");
+		#endif
+		return i32Len;
+	}
+
+    /* protocol version */
+    pu8NpduBuffer[0] = pstNpduData->protocol_version;
+    
+    /* initialize the control octet */
+    pu8NpduBuffer[1] = 0;
+        
+    /* 
+	Bit 7: 
+	1 = indicates that the NSDU conveys a network layer message. message type field is present.
+    0 = indicates that the NSDU contains a BACnet APDU. message type field is absent.
+	*/
+    if (pstNpduData->network_layer_message)
+    {
+        pu8NpduBuffer[1] |= BIT7;
+        i32Len = 2;
+    }
+    else
+    {
+        /* Bit 6: reserved. shall be zero. */
+        /* Bit 5: destination specifier where:
+           0 = DNET, DLEN, DADR, and Hop Count absent
+           1 = DNET, DLEN, and Hop Count present
+           DLEN = 0 denotes broadcast MAC i.e. DARD is absent
+           DLEN > 0 specifies length of DADR field
+		*/
+
+        if(pstDestAddress && pstDestAddress->u16net)
+            pu8NpduBuffer[1] |= BIT5;
+
+        /* Bit 4: reserved. shall be zero. */
+        /* Bit 3: Source specifier where:
+		   0 =  SNET, SLEN, and SADR absent
+           1 =  SNET, SLEN, and SADR present
+           SLEN = 0 Invalid
+           SLEN > 0 specifies length of SADR field 
+		*/
+		#ifdef SUPPORT_MULTIPLE_DEVICE
+        if (pstSrcAddress && pstSrcAddress->u16net && pstSrcAddress->u8dlen)
+            pu8NpduBuffer[1] |= BIT3;
+		#endif
+        
+        /* 
+		Bit 2: The value of this bit corresponds to the data_expecting_reply 
+		parameter in the N-UNITDATA primitives.
+        1 = indicates that a BACnet-Confirmed-Request-PDU, a segment of a 
+		BACnet-ComplexACK-PDU, or a network layer message expecting a reply is present.
+        0 = indicates that other than a BACnet-Confirmed-Request-PDU, a segment of a 
+		BACnet-ComplexACK-PDU, or a network layer message expecting a reply is present. 
+		*/
+        if (pstNpduData->data_expecting_reply)
+            pu8NpduBuffer[1] |= BIT2;
+
+        /* 
+		Bits 1,0: Network priority where:
+        B'11' = Life Safety message
+        B'10' = Critical Equipment message
+        B'01' = Urgent message
+        B'00' = Normal message 
+		*/
+        pu8NpduBuffer[1] |= (pstNpduData->priority & 0x03);
+
+		/* 2 bytes of NPDU encoded */
+        i32Len = 2;
+
+		/* encode DNET and DADR if present */
+        if(pstDestAddress && pstDestAddress->u16net) 
+        {
+			/* encode network number */
+            i32Len += Encode_Unsigned16(&pu8NpduBuffer[i32Len], pstDestAddress->u16net);
+            pu8NpduBuffer[i32Len++] = pstDestAddress->u8dlen;
+
+            /* DLEN = 0 denotes broadcast MAC i.e. DARD is absent */
+            /* DLEN > 0 specifies length of DADR field */
+            if(pstDestAddress->u8dlen) 
+            {
+				/* copy DADR */
+                for (u8Count = 0; u8Count < pstDestAddress->u8dlen; u8Count++) 
+                {
+                    pu8NpduBuffer[i32Len++] = pstDestAddress->u8DvDadr[u8Count];
+                }
+            }
+        }
+
+		#ifdef SUPPORT_MULTIPLE_DEVICE
+		/* encode SNET and SADR if present */
+        if (pstSrcAddress && pstSrcAddress->u16net && pstSrcAddress->u8dlen) 
+        {
+			/* encode network number */
+            i32Len += Encode_Unsigned16(&pu8NpduBuffer[i32Len], pstSrcAddress->u16net);
+            pu8NpduBuffer[i32Len++] = pstSrcAddress->u8dlen;
+
+            /* SLEN = 0 denotes broadcast MAC i.e. SADR field is absent */
+            /* SLEN > 0 specifies length of SADR field */
+            if (pstSrcAddress->u8dlen) 
+            {
+				/* copy SADR */
+                for (u8Count = 0; u8Count < pstSrcAddress->u8dlen; u8Count++) 
+                {
+                    pu8NpduBuffer[i32Len++] = pstSrcAddress->u8DvDadr[u8Count];
+                }
+            }
+        }
+		#endif
+
+        /* the Hop Count field shall be present only if the message is
+        destined for a remote network, i.e., if DNET is present.
+        This is a one-octet field that is initialized to a value 0XFF. */
+        if(pstDestAddress && pstDestAddress->u16net) 
+        {
+			/* encode hop count */
+			#ifdef SUPPORT_MULTIPLE_DEVICE
+            if(pstNpduData->hopcount <= 1 || pstNpduData->hopcount == 255)
+                pu8NpduBuffer[i32Len] = DFLT_HOP_COUNT-1;
+            else
+			#endif
+                pu8NpduBuffer[i32Len] = pstNpduData->hopcount;
+
+			/* hop count is 1 byte */
+            i32Len++;
+        }
+        if (pstDestAddress && pstDestAddress->u16net)
+		{
+			#ifdef SUPPORT_MULTIPLE_DEVICE
+			if (pstDestAddress->u16net == BACNET_GLOBAL_BROADCAST_NETWORK_NO)
+			{
+				pu8NpduBuffer[i32Len] = 0xFF;
+			}
+			else
+			#endif
+			{
+				pu8NpduBuffer[i32Len] = pstNpduData->hopcount;
+			}
+			i32Len++;
+		}
+    }
+
+	/* if this is network layer message, then encode message type */
+    if(pstNpduData->network_layer_message) 
+    {
+		/* message type */
+        pu8NpduBuffer[i32Len] = pstNpduData->network_message_type;
+        i32Len++;
+
+        /* if message type field contains a value in the range 0x80 - 0xff
+        then a vendor id field shall be present */
+        if(pstNpduData->network_message_type >= 0x80)
+		{
+			/* encode vendor ID */
+            i32Len += Encode_Unsigned16(&pu8NpduBuffer[i32Len], pstNpduData->vendor_id);
+		}
+    }
+
+	/* function exit */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Encode_Pdu: Exit \r\n");
+	#endif
+    return i32Len;
+}
+
+/**
+*
+* DESCRIPTION                                                                          
+* Handles messages at the encode NPDU level of the BACnet stack. 
+* This function encodes the messages that are coming from APDU 
+* layer handler and pass NPDU packets to BVLC layer handler.
+*
+* @param pstNpduProcInfo [in] Service APDU-NPDU data
+* @param pu8ApduData	 [in] Encoded APDU data
+* @param u16ApduLen		 [in] Encoded APDU data length
+*
+* @return  [out]  BACNET_RETURN_TYPE enumerations
+* BACDEL_SUCCESS on success else any other error code
+*
+*/
+BACNET_RETURN_TYPE NPDU_Encode_Handler(
+	processInfo_t *pstNpduProcInfo,
+	uint8_t *pu8ApduData,
+	uint16_t u16ApduLen)
+{
+	/* local variables */
+    uint16_t u16NpduLen = 0;
+    uint8_t au8NpduData[MAX_PDU] = {0};
+    BACNET_RETURN_TYPE eReturnValue = BACDEL_SUCCESS;
+
+	/* function entry */
+	#ifdef DEBUG_PRINTF
+    Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Encode_Handler: Entry \r\n");
+	#endif
+
+    /* check if valid pointers are present */
+    if((NULL == pstNpduProcInfo) || (NULL == pu8ApduData))
+    {
+		/* null input pointers */
+		#ifdef DEBUG_PRINTF
+		Print_DebugMsg(DEBUG_LEVEL0, "BACnetStackNWLayer: \
+		NPDU_Encode_Handler: Null input pointers \r\n");
+		#endif
+		return BACDEL_ERROR;
+	}
+
+    /* FIXME: need to change (to true) if segment of complex ack is Encoded*/
+    // for Server response if its Segmented response then only true
+    // for Client Request if its Confirmed Request then only true
+    //if(pstNpduProcInfo->m_stProcessData.m_stNPDU.data_expecting_reply == true)
+    //pstNpduProcInfo->m_stProcessData.m_stNPDU.data_expecting_reply = false;
+
+    /* Initialize an npdu_data structure to good defaults */
+    //NPDU_Set_Data(&Npdu_Data, pstNpduProcInfo->m_stProcessData.m_stNPDU.data_expecting_reply,
+    //    pstNpduProcInfo->m_stProcessData.m_stNPDU.priority);
+
+	/* set the protocol version of the device */
+	pstNpduProcInfo->m_stProcessData.m_stNPDU.protocol_version = 1;
+
+    /* encode the NPDU header of the message to be sent */
+    u16NpduLen = (uint16_t)NPDU_Encode_Pdu(&au8NpduData[0], 
+        &pstNpduProcInfo->m_stProcessData.m_stRmDvAddr,
+        &pstNpduProcInfo->m_stProcessData.m_stIUTAddr, 
+        &pstNpduProcInfo->m_stProcessData.m_stNPDU);
+
+	/* encode network no if Who-Is-Router-To-Network message */
+	if(u16NpduLen && 
+		true == pstNpduProcInfo->m_stProcessData.m_stNPDU.network_layer_message &&
+        pstNpduProcInfo->m_stProcessData.m_stNPDU.network_message_type == 
+        NETWORK_MESSAGE_WHO_IS_ROUTER_TO_NETWORK &&
+		BACNET_ZERO != pstNpduProcInfo->m_stProcessData.m_stNPDU.u16RtrNetNumber &&
+		UINT16_MAX != pstNpduProcInfo->m_stProcessData.m_stNPDU.u16RtrNetNumber) 
+	{
+        /* encode network no */
+		u16NpduLen += (uint16_t)Encode_Unsigned16(&au8NpduData[u16NpduLen],
+			pstNpduProcInfo->m_stProcessData.m_stNPDU.u16RtrNetNumber);
+	}
+	/* encode network no if I-Am-Router-To-Network message */
+    else if(u16NpduLen && 
+		true == pstNpduProcInfo->m_stProcessData.m_stNPDU.network_layer_message &&
+		pstNpduProcInfo->m_stProcessData.m_stNPDU.network_message_type ==
+        NETWORK_MESSAGE_I_AM_ROUTER_TO_NETWORK)
+	{
+        /* encode network no */
+		u16NpduLen += (uint16_t)Encode_Unsigned16(&au8NpduData[u16NpduLen], g_u16VirtualNWNo);
+	}
+	/* encode Reject-Message-To-Network message */
+    else if(u16NpduLen && 
+		true == pstNpduProcInfo->m_stProcessData.m_stNPDU.network_layer_message &&
+		pstNpduProcInfo->m_stProcessData.m_stNPDU.network_message_type == 
+        NETWORK_MESSAGE_REJECT_MESSAGE_TO_NETWORK)
+	{
+		/* encode reject reason */
+        au8NpduData[u16NpduLen] = pstNpduProcInfo->m_stProcessData.m_stNPDU.u8NwMsgRejectReason;
+        u16NpduLen ++;
+        /* encode network no in destination */
+        u16NpduLen += (uint16_t)Encode_Unsigned16(&au8NpduData[u16NpduLen], 
+            pstNpduProcInfo->m_stProcessData.m_stIUTAddr.u16net);
+	}
+
+	/* check encoded NPDU length */
+    if(u16NpduLen <= 0)
+    {
+		/* errro encoding NPDU */
+		#ifdef DEBUG_PRINTF
+        Print_DebugMsg(DEBUG_LEVEL2, "BACnetStackNWLayer: \
+		NPDU_Encode_Handler: Error encoding NPDU \r\n");
+		#endif
+        eReturnValue = BACDEL_ERROR;
+    }
+    else
+    {
+        /* fill in the apdu data bytes */
+        memcpy((void *)&au8NpduData[u16NpduLen], (const void *)pu8ApduData, u16ApduLen);
+
+        {
+		/* MSTP encoding */
+		eReturnValue = MSTP_Encode_Handler(pstNpduProcInfo,
+			&au8NpduData[0], (u16NpduLen+u16ApduLen));
+		}
+
+        if(BACDEL_SUCCESS != eReturnValue)
+        {
+			/* error encoding BVLC data */
+			#ifdef DEBUG_PRINTF
+            Print_DebugMsg(DEBUG_LEVEL2, "BACnetStackNWLayer: \
+			NPDU_Encode_Handler: Bvlc encoder returns error \r\n");
+			#endif
+            ;//dummy statement
+        }
+    }
+
+	/* function exit */
+	#ifdef DEBUG_PRINTF
+    Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Encode_Handler: Exit \r\n");
+	#endif
+    return eReturnValue;
+}
+
+/**
+*
+* DESCRIPTION 
+* Copy the NPDU data information from source to destination.
+*
+* @param pstSrcAddress   [in] Source data structure
+* @param pDestAddress [out] Destination data structure
+*
+* @return [out] void
+*
+*/
+void NPDU_Copy_Data(
+	Bacnet_Npdu_Data_t *pDestNpduData,
+    Bacnet_Npdu_Data_t *pSrcNpduData)
+{
+	/* function entry */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Copy_Data: Entry \r\n");
+	#endif
+	
+    /* check if both input pointers are valid i.e. not null */
+    if(pDestNpduData && pSrcNpduData) 
+    {
+		/* copy data */
+        pDestNpduData->protocol_version = pSrcNpduData->protocol_version;
+        pDestNpduData->data_expecting_reply = pSrcNpduData->data_expecting_reply;
+        pDestNpduData->network_layer_message = pSrcNpduData->network_layer_message;
+        pDestNpduData->priority = pSrcNpduData->priority;
+        pDestNpduData->network_message_type = pSrcNpduData->network_message_type;
+        pDestNpduData->vendor_id = pSrcNpduData->vendor_id;
+        pDestNpduData->hopcount = pSrcNpduData->hopcount;
+    }
+	
+	/* function exit */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: NPDU_Copy_Data: Exit\r\n");
+	#endif
+    return;
+}
+
+/**
+*
+* DESCRIPTION 
+* Initialize NPDU data to default values.
+* Fill input data into NPDU structure.
+*
+* @param ePriority	 [in] Network layer priority value
+* @param u8MsgType   [in] Message-Type in case this is nw layer message
+* @param pstNpduData [in] Pointer to NPDU data
+* @param bDataExpectReply	[in] True if message should have a reply
+* @param bIsNetworkLayerMsg [in] Specifies if this is network layer msg or not
+*
+* @return [out] void
+*
+*/
+void NPDU_Set_Data(
+   Bacnet_Npdu_Data_t *pstNpduData,
+   bool bDataExpectReply,
+   BACNET_MESSAGE_PRIORITY ePriority,
+   bool bIsNetworkLayerMsg,
+   uint8_t u8MsgType)
+{
+	/* function entry */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: \
+	NPDU_Set_Data: Entry \r\n");
+	#endif
+
+	/* check if input pointer is valid i.e. not null */
+    if(pstNpduData) 
+    {
+		/* protocol version */
+		pstNpduData->protocol_version = BACNET_PROTOCOL_VERSION;
+
+		/* data expecting reply */
+        pstNpduData->data_expecting_reply = bDataExpectReply;
+
+		/* NSDU type */
+		if(bIsNetworkLayerMsg)
+		{
+			/* this is a network layer message */
+			pstNpduData->network_layer_message = true;
+			/* message type */
+			pstNpduData->network_message_type = u8MsgType;
+		}
+		else
+		{
+			/* this is not a network layer message */
+			pstNpduData->network_layer_message = false;
+			/* set default value, optional */
+			pstNpduData->network_message_type = NETWORK_MESSAGE_INVALID;
+		}
+
+        /* optional, if network message type is >= 0x80 */
+		/* vendor id */
+        pstNpduData->vendor_id = g_u16VendorID;
+
+		/* network layer priority */
+        pstNpduData->priority = ePriority;
+
+		/* hop count */
+        pstNpduData->hopcount = DFLT_HOP_COUNT;
+    }
+
+	/* function exit */
+	#ifdef DEBUG_PRINTF
+	Print_DebugMsg(DEBUG_LEVEL3, "BACnetStackNWLayer: \
+	NPDU_Set_Data: Exit \r\n");
+	#endif
+	return;
+}
+
+/************************** end of bacnetNPDUHandler.c file ***************************/
+
