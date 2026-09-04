@@ -105,7 +105,6 @@
 									<listOptionValue builtIn="false" value="BACDEL_SER_DS_COV_B"/>
 									<listOptionValue builtIn="false" value="BACDEL_FREERTOS"/>
 									<listOptionValue builtIn="false" value="__packed=__attribute__((__packed__))"/>
-									<listOptionValue builtIn="false" value="BACDEL_IP_STACK"/>
 									<listOptionValue builtIn="false" value="BACDEL_SER_DS_RP_B"/>
 									<listOptionValue builtIn="false" value="BACDEL_SER_DS_RPM_B"/>
 									<listOptionValue builtIn="false" value="BACDEL_SER_DS_WPM_B"/>
@@ -132,6 +131,12 @@
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="NEW_RP_WP_INTERFACE"/>
 									<listOptionValue builtIn="false" value="USE_NUCLEO_64"/>
+									<listOptionValue builtIn="false" value="BACDEL_SER_DS_RP_A"/>
+									<listOptionValue builtIn="false" value="BACDEL_SER_DS_WP_A"/>
+									<listOptionValue builtIn="false" value="BACDEL_DER_DS_RPM_A"/>
+									<listOptionValue builtIn="false" value="BACDEL_SER_DS_RPM_A"/>
+									<listOptionValue builtIn="false" value="BACDEL_PR23"/>
+									<listOptionValue builtIn="false" value="BACDEL_MSTP_STACK"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.497522265" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/BACDEL_Stack/Api/Inc}&quot;"/>

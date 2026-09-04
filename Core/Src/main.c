@@ -26,7 +26,9 @@
 #include "usart.h"
 #include "gpio.h"
 
+#include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -122,6 +124,33 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/* Blocking debug print over uart6 - safe to call before the RTOS starts. */
+void Debug_Log(const char *pMsg)
+{
+  HAL_UART_Transmit(&huart6, (uint8_t *)pMsg, (uint16_t)strlen(pMsg), HAL_MAX_DELAY);
+}
+
+/* printf-style version of Debug_Log, for logging variable state (frame type,
+ * MAC, counters, ...) from the MSTP state machine. */
+void Debug_LogFmt(const char *pFmt, ...)
+{
+  char acBuf[128];
+  va_list args;
+
+  va_start(args, pFmt);
+  int iLen = vsnprintf(acBuf, sizeof(acBuf), pFmt, args);
+  va_end(args);
+
+  if (iLen > 0)
+  {
+    if (iLen >= (int)sizeof(acBuf))
+    {
+      iLen = sizeof(acBuf) - 1;
+    }
+    HAL_UART_Transmit(&huart6, (uint8_t *)acBuf, (uint16_t)iLen, HAL_MAX_DELAY);
+  }
+}
 
 /* USER CODE END 0 */
 

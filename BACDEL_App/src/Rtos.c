@@ -128,6 +128,31 @@ const osThreadAttr_t attr_DvNotification = {
 		.name = "DvNotification", .priority = osPriorityAboveNormal, .stack_size = 2048*4
 };
 
+/*===================== Data sharing Test Handles====================*/
+
+#ifdef BACDEL_SER_DS_RP_A
+osThreadId_t Task_RP_A_Test_THandle;
+const osThreadAttr_t attr_RP_A_Test = {
+		.name = "RP_A_Test_Task", .priority = osPriorityLow, .stack_size = 1024*4
+};
+#endif
+
+#ifdef BACDEL_SER_DS_WP_A
+osThreadId_t Task_WP_A_Test_THandle;
+const osThreadAttr_t attr_WP_A_Test = {
+		.name = "WP_A_Test_Task", .priority = osPriorityLow, .stack_size = 1024*4
+};
+#endif
+
+#ifdef BACDEL_SER_DS_RPM_A
+osThreadId_t Task_RPM_A_Test_THandle;
+const osThreadAttr_t attr_RPM_A_Test = {
+		.name = "RPM_A_Test_Task", .priority = osPriorityLow, .stack_size = 1024*4
+};
+#endif
+/*===================== Data sharing Test Handles====================*/
+
+
 /*Event queue declarations*/
 QueueHandle_t Cov_EventQueue;
 
@@ -295,6 +320,26 @@ void InitFreeRtos(void)
 	Task_Initiate_THandle = osThreadNew(Initiate_Thread_Task, NULL, &attr_Initiate);
 	   /* definition and creation of Task_DvManageme */
 	Task_DvManagemeHandle = osThreadNew(DvManagementThread, NULL, &attr_DvManagement);
+
+
+	/*---------------------- Enable Threads for A-side Test ----------------------*/
+
+#ifdef BACDEL_SER_DS_TEST
+	/* definition and creation of Task_RP_A_Test - started after app_bacnet_init()
+	    * (called earlier in main.c, before InitFreeRtos()) has registered the RP-A
+	    * confirmed-ack handler and brought up the initiate queue/thread above */
+#ifdef BACDEL_SER_DS_RP_A
+	Task_RP_A_Test_THandle = osThreadNew(RP_A_Test_Thread, NULL, &attr_RP_A_Test);
+#endif
+#ifdef BACDEL_SER_DS_WP_A
+	Task_WP_A_Test_THandle = osThreadNew(WP_A_Test_Thread, NULL, &attr_WP_A_Test);
+#endif
+#ifdef BACDEL_SER_DS_RPM_A
+	Task_RPM_A_Test_THandle = osThreadNew(RPM_A_Test_Thread, NULL, &attr_RPM_A_Test);
+#endif
+
+#endif   /*  BACDEL_SER_DS_TEST  */
+	/*----------------------------------------------------------------------------------------------*/
 
 #if (defined BACDEL_SER_DS_COV_B || defined BACDEL_SER_AE_EN_B)
 		 /* definition and creation of DvNotification */

@@ -2255,7 +2255,12 @@ BACNET_RETURN_TYPE Copy_Destination_Parameter(
 			}
 			else if(NULL != pstDestinationAdd)
 			{
-
+				/* raw MAC addressing (bDestTypeFlag == FALSE) - copy the
+				 * caller-supplied address straight through. This branch was
+				 * previously empty, so pstReturnDestAddr was never populated
+				 * and every A-side request sent by raw MAC (not device-ID
+				 * lookup) went out with a stale/zeroed destination address. */
+				*pstReturnDestAddr = *pstDestinationAdd;
 			}
 			else
 			{

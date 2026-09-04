@@ -33,10 +33,10 @@ void InitBACnetStruct()
 {
 	memset(&SMCfg.g_BACnetCfg, 0, sizeof(SMCfg.g_BACnetCfg));
 
-	SMCfg.g_BACnetCfg.ObjID = 0x55;
+	SMCfg.g_BACnetCfg.ObjID = 0x55;  // ObjID : A-side = Ox55 (85) , B-side = 0x20 (32)
 
 	// MSTP-only
-	SMCfg.g_BACnetCfg.ComID = 5; //Softdel: Change the MAC ID to 5
+	SMCfg.g_BACnetCfg.ComID = 5;    // MAC ID:  A-side = 5, B-side = 9
 	SMCfg.g_BACnetCfg.MaxMaster = 127;
 
 }

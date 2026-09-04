@@ -12,8 +12,9 @@
 #include "bacDELDeviceConfig.h"
 #include "bacDELDef.h"
 #include <string.h>
-#include "defineStruct.h"
+#include "DefineStruct.h"
 #include "DataB.h"
+#include "datalinkMSTP.h"
 #include "ServiceAPICallBack.h"
 #include <stdlib.h>
 /** variable to save Token Id */
@@ -55,9 +56,24 @@ BACNET_RETURN_TYPE RP_A_Request(void)
 
 	BACNET_RETURN_TYPE	eReturnType = BACDEL_SUCCESS;
 
+	/*------------------------------------------------------
+	 * Source / Destination
+	 *------------------------------------------------------*/
 	u32SrsDevId = SMCfg.g_BACnetCfg.ObjID;
+
+	/* Device B BACnet Device ID */
 	u32DestDevId = 32;
 
+    /*------------------------------------------------------
+     * MSTP Destination
+     *------------------------------------------------------*/
+    /* Device B MSTP MAC */
+    uint8_t u8DestMstpMac = 6;
+
+    stDestinationAdd.u8mac_len = MSTP_ADDRESS_LEN;
+    stDestinationAdd.u8IpAddrs[0] = u8DestMstpMac;
+
+	/*
 	stDestinationAdd.u8IpAddrs[0]=146;
 	stDestinationAdd.u8IpAddrs[1]=1;
 	stDestinationAdd.u8IpAddrs[2]=168;
@@ -66,6 +82,7 @@ BACNET_RETURN_TYPE RP_A_Request(void)
 	stDestinationAdd.u8IpAddrs[4]=0xC0;
 	stDestinationAdd.u8IpAddrs[5]=0xBA;
 	stDestinationAdd.u8mac_len = 6;
+	*/
 
 	/* fill RP-A request parameter */
 	stRpReqData.m_eObjectType = (BACNET_OBJECT_TYPE)u32ObjType;
